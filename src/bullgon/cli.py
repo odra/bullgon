@@ -1,3 +1,6 @@
+"""
+Bullgon command line interface module.
+"""
 import click
 
 from . import __version__
