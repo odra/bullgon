@@ -27,4 +27,8 @@ def run() -> None:
 
     Its sole purpose is to be used as the script main entrypoint.
     """
-    cli()
+    try:
+        cli()
+    except errors.BullgonError as e:
+        click.echo(str(e)), err=True)
+        click.exit(e.code)
