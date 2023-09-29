@@ -9,6 +9,9 @@ packages = [
   { include="bullgon", from="src/" }
 ]
 
+[tool.poetry.scripts]
+bullgon = "bullgon.cli:run"
+
 [tool.poetry.dependencies]
 python = "^3.11"
 click = "^8.1.7"
@@ -17,6 +20,7 @@ click = "^8.1.7"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
 pytest-sugar = "^0.9.7"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
