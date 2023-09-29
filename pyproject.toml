@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "bullgon"
+version = "0.1.0"
+description = "local device management"
+authors = ["odra <me@lrossetti.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+  { include="bullgon", from="src/" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+click = "^8.1.7"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+pytest-sugar = "^0.9.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
