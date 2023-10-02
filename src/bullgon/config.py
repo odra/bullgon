@@ -22,7 +22,6 @@ class Config:
         * doesn't do anything if `self.basedir` is already set
         * uses "$XDG_CONFIG_HOME/bullgon" as the top priority path
         * Uses "$HOME/.config/bullgon" as fallback
-        * Uses "/etc/bullgon" if none of the previous vars can be used
         """
         # TODO: refactor this if-else abomination
         base_dir = self.base_dir
@@ -53,23 +52,25 @@ def init(cfg: Config) -> None:
         raise errors.BullgonError(e.strerror, e.errno)
 
 
-# def get_device_list(basedir: str) -> List[str]:
-#     """
-#     Return the list of device config files from the basedir.
-# 
-#     Device config files should end with ".toml".
-#     """
-#     device_dir = f'{basedir}/devices.d'
-#     return [f for f in os.listdir(device_dir) if f.endswith('.toml')]
-# 
-# 
-# def load_device(path: str) -> device.Device:
-#     """
-#     Loads a device from a configuration file
-#     and return a `bullgon.device.Device` object.
-#     """
-#     # TODO: error handling
-#     with open(path, 'rb') as f:
-#         data = tomllib.load(f)
-# 
-#     return device.Device(**data['device'])
+def load_device(cfg: Config, name: str) -> device.Device:
+    """
+    Loads a device from a TOML configuration file
+    and return a `bullgon.device.Device` object.
+    """
+    path = f'{cfg.devices_dir}/{name}.toml'
+    if not os.path.exists(path):
+        raise errors.BullgonError(f'Could not find {path}')
+    
+    with open(path, 'rb') as f:
+        try:
+            data = tomllib.load(f)
+        except tomllib.TOMLDecodeError:
+            raise errors.BullgonError(f'Failed to parse {path}')
+
+    dev = data.get('device')
+    if dev is None:
+        raise errors.BullgonError(f'Could not find a "[device]" section in {path}')
+
+    dev['name'] = name
+
+    return device.Device(**data['device'])

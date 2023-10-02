@@ -6,7 +6,7 @@ from typing import Optional
 
 import click
 
-from . import config, errors, __version__
+from . import config, device, errors, __version__
 
 @click.group
 @click.option('--base-dir', 
@@ -42,7 +42,24 @@ def setup(ctx: click.Context) -> None:
     
     config.init(cfg)
 
-    click.echo(f'==> Bullgon initialized at {cfg.base_dir}')
+    click.echo(f'==> INFO: Bullgon initialized at {cfg.base_dir}')
+
+
+@cli.command
+@click.pass_context
+@click.argument('device-name', type=str)
+def wake(ctx: click.Context, device_name: str) -> None:
+    """
+    Turns a device on using "wake on lan".
+
+    Device defintions should be stored in "$BASEDIR/devices.d/$DEVICE_NAME.toml".
+    """
+    cfg = config.Config(ctx.obj['base_dir'])
+    dev = config.load_device(cfg, device_name)
+
+    click.echo(f'==> INFO: Trying to wake device "{device_name}..."')
+    device.wake(dev)
+    click.echo(f'==> INFO: Done.')
 
 
 def run() -> None:
@@ -54,5 +71,5 @@ def run() -> None:
     try:
         cli()
     except errors.BullgonError as e:
-        click.echo(str(e), err=True)
+        click.echo(f'==> ERR: {e.message}', err=True)
         sys.exit(e.code)
