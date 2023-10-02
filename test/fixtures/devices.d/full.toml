@@ -1,0 +1,5 @@
+[device]
+mac = "ZZ::ZZ:ZZ:ZZ:ZZ"
+netmask = "255.255.255.250"
+port = 39
+interface = "eth10"
