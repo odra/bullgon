@@ -20,6 +20,8 @@ def test_config_custom_ok():
 ])
 def test_config_env_ok(monkeypatch, env_name, env_value, base_dir, mock_dir):
     with monkeypatch.context() as m:
+        monkeypatch.delenv('XDG_CONFIG_HOME', raising=False)
+        monkeypatch.delenv('HOME', raising=False)
         m.setenv(env_name, env_value)
         if mock_dir:
             m.setattr('os.path.exists', lambda path: True)
