@@ -1,0 +1,25 @@
+from setuptools import setup
+
+
+def readme():
+  with open('README.md', 'r') as f:
+    return f.read()
+
+
+setup(
+  name='{{name}}',
+  version='{{version}}',
+  description='{{description}}',
+  long_description=readme(),
+  author='{{author_name}}',
+  author_email='{{author_email}}',
+  url='{{url}}',
+  license='{{license}}',
+  package_dir={{package_dir}},
+  packages={{packages}},
+  install_requires={{requires}},
+  entry_points={
+    'console_scripts': {{console_scripts}}
+  },
+)
+
