@@ -42,14 +42,20 @@ def from_dict(data: Dict[str, Any]) -> Device:
 
 def wake(dev: Device) -> None:
     mac = dev.mac.replace(':', '')
-    packet = bytes.fromhex('F' * 12 + mac * 16)
+    try:
+        packet = bytes.fromhex('F' * 12 + mac * 16)
+    except ValueError:
+        raise errors.BullgonError(f'Invalid mac address: {mac}')
 
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         if dev.interface is not None:
             interface = f'{dev.interface}\0'.encode('utf-8')
             s.setsockopt(socket.SOL_SOCKET, 25, interface)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        s.connect((dev.netmask, dev.port))
-
-        s.send(packet)
-        s.close()
+        try:
+            s.connect((dev.netmask, dev.port))
+            s.send(packet)
+        except OSError:
+            raise errors.BullgonError(f'Failed to sent packet to device "{dev.name}"')
+        finally:
+            s.close()

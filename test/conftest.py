@@ -1,4 +1,5 @@
 import os
+import socket
 
 import pytest
 from click.testing import CliRunner
@@ -33,3 +34,13 @@ def fixture_dir(test_dir):
 @pytest.fixture
 def devices_dir(fixture_dir):
     return f'{fixture_dir}/devices.d'
+
+
+@pytest.fixture
+def fakesocket():
+    class FakeSocket(socket.socket):
+        def connect(*args, **kwargs): pass
+        def send(*args, **kwargs): pass
+        def close(*args, **kwargs): pass
+    
+    return FakeSocket
