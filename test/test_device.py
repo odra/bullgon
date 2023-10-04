@@ -1,3 +1,5 @@
+import socket
+
 import pytest
 
 from bullgon import device, errors
@@ -64,3 +66,29 @@ def test_device_from_dict_error():
 
     with pytest.raises(errors.BullgonError):
         device.from_dict(data)
+
+
+def test_device_wake_ok(monkeypatch, fakesocket):
+    dev = device.Device('mydev', '00:0a:00:a0:a0:00')
+    with monkeypatch.context() as m:
+        m.setattr('socket.socket', fakesocket)
+        device.wake(dev)
+
+
+def test_device_wake_mac_error(monkeypatch):
+    dev = device.Device('mydev', 'ZZ:ZZ:ZZ:ZZ:ZZ:ZZ')
+    with pytest.raises(errors.BullgonError):
+        device.wake(dev)
+
+
+def test_device_wake_socket_error(monkeypatch, fakesocket):
+    dev = device.Device('mydev', '00:0a:00:a0:a0:00')
+    def raise_error(*args, **kwargs):
+        raise socket.herror()
+
+    with monkeypatch.context() as m, pytest.raises(errors.BullgonError):
+        setattr(fakesocket, 'connect', raise_error)
+        m.setattr('socket.socket', fakesocket)
+        device.wake(dev)
+
+
