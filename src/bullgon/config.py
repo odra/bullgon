@@ -11,7 +11,6 @@ class Config:
     Config data class.
     """
     base_dir: Optional[str] = field(default=None)
-    devices_dir: str = field(init=False) 
 
     def __post_init__(self) -> None:
         """
@@ -23,23 +22,29 @@ class Config:
         * uses "$XDG_CONFIG_HOME/bullgon" as the top priority path
         * Uses "$HOME/.config/bullgon" as fallback
         """
-        # TODO: refactor this if-else abomination
-        base_dir = self.base_dir
+        if self.base_dir:
+            return None 
 
-        if base_dir is None:
-            xdg_config_dir = os.environ.get('XDG_CONFIG_HOME')
-            if xdg_config_dir:
-                base_dir = f'{xdg_config_dir}/bullgon'
+        xdg_config_dir = os.environ.get('XDG_CONFIG_HOME')
+        if xdg_config_dir:
+            self.base_dir = f'{xdg_config_dir}/bullgon'
+            
+            return None
 
-            home_dir = os.environ.get('HOME')
-            if home_dir and base_dir is None:
-                if os.path.exists(f'{home_dir}/.config'):
-                    base_dir = f'{home_dir}/.config/bullgon'
-                else:
-                    base_dir = f'{home_dir}/.bullgon'
+        home_dir = os.environ.get('HOME')
+        if home_dir:
+            has_cfg_dir = os.path.exists(f'{home_dir}/.config')
+            home_cfg_dir = f'{home_dir}/.config/bullgon'
+            home_dir = f'{home_dir}/.bullgon'
+            self.base_dir = home_cfg_dir if has_cfg_dir else home_dir
 
-        self.base_dir = base_dir
-        self.devices_dir = f'{self.base_dir}/devices.d'
+            return None
+        
+        self.base_dir = '/etc/bullgon'
+
+    @property
+    def devices_dir(self) -> str:
+        return f'{self.base_dir}/devices.d'
 
 
 def init(cfg: Config) -> None:
