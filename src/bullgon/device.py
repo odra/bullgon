@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 from . import errors
 
+
 @dataclass
 class Device:
     """
