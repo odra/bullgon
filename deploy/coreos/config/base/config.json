@@ -1,0 +1,63 @@
+{
+  "ignition": {
+    "version": "3.4.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC74MvKmV49jYCBXEJr/+QON9XJABpNOGX3YMrGCqO+ZKXUBUfdGRJdkY94KxNoHJ2JVTiG0EyX0tIxKouhH/tmDdKe4rTz4TWtVHVKmbT8gftNi0D60rrNAq+RL2BCoEKuC1JecDjEWRI56XbeBhsk+H5sKa0Kq8zsHLzneZW4BEQboq+k08mOTeCf9A03IgjIsaG5OR9rm94k3AoG6f6oEsWrpik/UpbTy0hXR37ZCzivs/Orrm7WN6asPrAVtaP4zamruaYvJa54PWEn7QjOGMxm/JmV9560hVllt9lYmIhL/f6BHkAAyhR7Dxx0725s15w49cB+fIpYKStiZxAmPNrwUjcwOuEf6EYMlit7elGpiM8uR9Vipz/W8k13PZg0CWSqcXmubBJcZQCV7TgSeP+SXA+kQ44tuHcGbCZhC7Wao54iysvJqooCeKWxuqJslIM7+AJOwONvmbyjS6sFIREp/fSa5kj1KD382opfjzAtW7PBZmJ1L2De7C8wDqU= lrossetti@fedora"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/usr/local/bin/wol-enable",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/2zNTUvEMBDG8Xs+xYiBVTCurhcvexC6hwVfbnosaTJthqYzpUkNYv3uHgQtsscH/vye87NtQ7xtbApKvb081tXhtX5+eDrs9e3vPlZ7fcGDiwTGtITRJ/D4Tg6v5pk8OGFGl0kYUpACC3QTjqDXHixgSw+bz3EizqB3X5tLpTCHLBLBpH91kQidUj+nK38QT+3HX3ys4P5mZ+4M5oATY74utkcjbKJlGGxH7oQyj2tBfQcAAP//DSljQQUBAAA="
+        },
+        "mode": 493
+      },
+      {
+        "path": "/etc/systemd/system/wol.service.d/wol.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,%5BService%5D%0AEnvironment%3DWOL_IF%3Denp37s0%0A"
+        },
+        "mode": 420
+      }
+    ],
+    "filesystems": [
+      {
+        "device": "/dev/mapper/root",
+        "format": "xfs",
+        "label": "root",
+        "wipeFilesystem": true
+      }
+    ],
+    "luks": [
+      {
+        "clevis": {
+          "tpm2": true
+        },
+        "device": "/dev/disk/by-partlabel/root",
+        "label": "luks-root",
+        "name": "root",
+        "wipeVolume": true
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Enable wol on startup\nWants=network-online.target\nAfter=network-online.target\nBefore=zincati.service\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStar=/usr/local/bin/wol-enable $WOL_IF\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "wol.service"
+      }
+    ]
+  }
+}

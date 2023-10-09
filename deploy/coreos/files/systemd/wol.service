@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable wol on startup
+Wants=network-online.target
+After=network-online.target
+Before=zincati.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStar=/usr/local/bin/wol-enable $WOL_IF
+
+[Install]
+WantedBy=multi-user.target
