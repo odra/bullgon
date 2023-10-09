@@ -1,0 +1,10 @@
+#!/bin/bash
+
+WOL_DEV_NAME=$1
+WOL_DEV_ID=$(nmcli --fields device,uuid connection show | grep $WOL_DEV_NAME | awk '{print $2}')
+
+ethtool -s $WOL_DEV_NAME wol g
+
+nmcli connection modify $WOL_DEV_ID 802-3-ethernet.wake-on-lan magic
+
+nmcli connection up $WOL_DEV_ID

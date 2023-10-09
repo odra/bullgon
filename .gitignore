@@ -1,3 +1,10 @@
+# coreos stuff
+deploy/coreos/outputs/*
+!deploy/coreos/outputs/.keepme
+
+deploy/coreos/files/ssh/*
+!deploy/coreos/files/ssh/.keepme
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

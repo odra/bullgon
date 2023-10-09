@@ -1,0 +1,31 @@
+variant: fcos
+version: 1.5.0
+boot_device:
+  luks:
+    tpm2: true
+storage:
+  files:
+    # - path: /etc/coreos/installer.d/custom.yaml
+    #   contents:
+    #     inline: |
+    #       dest-device: /dev/sda
+    - path: /usr/local/bin/wol-enable
+      mode: 0755
+      contents: 
+        local: scripts/wol-enable
+    - path: /etc/systemd/system/wol.service.d/wol.conf
+      mode: 0644
+      contents:
+        inline: |
+          [Service]
+          Environment=WOL_IF=enp37s0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys_local:
+        - ssh/id_rsa.pub
+systemd:
+  units:
+    - name: wol.service
+      contents_local: systemd/wol.service
+      enabled: true
